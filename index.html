@@ -1,1 +1,82 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ID Generator</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
 
+    <script>
+        // 4000x2519 image
+        // 2872,357 - 3819,1541
+
+        const w = 676;
+        const h = 426;
+
+        const canvas = document.querySelector("#canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+
+        const pfpImage = document.createElement("img");
+
+        const sData = "2025-09-14.json";
+        let id = 25139099;
+
+        const idBase = document.createElement("img");
+        idBase.src = "idBase.png";
+    
+        fetch(sData)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        })
+        .then(jsonData => {
+            // Use the parsed JSON data (which is a JavaScript object) here
+            console.log(jsonData);
+            
+            for (let s of jsonData.students) {
+                if (s.id == id) {
+                    console.log(s);
+                    pfpImage.src = s.image[0];
+                    ctx.drawImage(idBase, 0, 0, w, h);
+                    ctx.drawImage(pfpImage, w*0.718, h*0.1417, w*0.23675, h*0.47003);
+
+                    ctx.font = 20.83 * w/676 + "px Arial";
+                    ctx.fillStyle = "#000000";
+                    ctx.fillText("Student ID: " + 5250578, w*0.4725, h*0.9512); 
+                    break;
+                }
+            }
+        })
+        .catch(error => {console.error('Error fetching JSON:', error);});
+
+        let dataset1;
+        let dataset2;
+
+        fetch("database1.json").then(response => {
+            return response.json();
+        }).then(jsonData => {
+            dataset1 = jsonData;
+        })
+
+        fetch("database2.json").then(response => {
+            return response.json();
+        }).then(jsonData => {
+            dataset2 = jsonData;
+        })
+
+        function getCHSIdFromName(name) {
+            let ct = 0;
+            for (let i = 0; i < dataset1.length; i+=4) {
+                if (dataset1[i+2] == name) {
+                    
+                }
+            }
+        }
+        
+
+    </script>
+</body>
+</html>
