@@ -14,106 +14,10 @@
     <label for="width">Image width: </label><input type="number" id="width" name="width" value="1200">
     <input id="submit" type="submit" value="Submit"><br><br>
     <canvas id="canvas"></canvas>
-    <img id="barcode" style="display:none">
+    <img id="barcode" style="display:none"><br>
+    <a href="all_ids.html">List of all IDs</a>
 
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-    <script>
-        // 4000x2519 image
-        // 2872,357 - 3819,1541 (picture coords)
-
-        let w;
-        let h;
-        const canvas = document.querySelector("#canvas");
-        const ctx = canvas.getContext('2d');
-        const scale = window.devicePixelRatio || 1;
-
-        const barcode = document.querySelector("#barcode");
-        const idBase = document.createElement("img");
-        idBase.src = "idBase.png";
-
-        let emailData;
-        fetch("emailData.json").then(r => r.json()).then(d => {emailData = d;})
-        
-        let sData;
-        fetch("2025-09-14.json").then(r => r.json()).then(d => {sData = d.students.filter(s => s.id > 138000000 && s.school.includes("Cupertino High School"))});
-        
-        (async ()=>{const openSans = new FontFace("OpenSans", "url(OpenSans.ttf)");
-        await openSans.load();
-        document.fonts.add(openSans);})();
-
-
-        function updateId(name) {
-            if (!sData) return;
-            for (let s of sData) {
-                if (name.split(" ").length === 1 ? s.name.toLowerCase().split(" ")[0] === name.toLowerCase() : s.name.toLowerCase() === name.toLowerCase()) {
-                    let id = nameToId(s.name);
-
-                    console.log(s);
-                    let pfpImage = document.createElement("img");
-                    pfpImage.src = s.image[0];
-                    pfpImage.addEventListener("load", ()=>{
-                        JsBarcode("#barcode", id, {
-                            format: "CODE39",
-                            width: 2.48*w/676,
-                            height: 55*w/676,
-                            displayValue: false,
-                            margin: 0,
-                        });
-                        barcode.addEventListener("load", ()=>{
-                            ctx.drawImage(idBase, 0, 0, w, h);
-                            ctx.drawImage(pfpImage, w*0.718, h*0.1417, w*0.23675, h*0.47003);
-
-                            ctx.textAlign = "left";
-                            ctx.font = 20.83 * w/676 + "px OpenSans";
-                            ctx.fillStyle = "#000000";
-                            ctx.fillText("Grade: 9", w*0.22, h*0.9512); 
-                            ctx.fillText("Student ID: " + id, w*0.4725, h*0.9512); 
-
-                            ctx.textAlign = "center";
-                            ctx.font = 28 * w/676 + "px OpenSans";
-                            ctx.fillText(s.name, w*0.49, h*0.72);
-
-                            ctx.drawImage(barcode, w*0.226, h*0.75);
-                            ctx.font = "bold " + 33.2 * w/676 + "px 'Arial Black'";
-                            ctx.scale(0.9, 1);
-                            ctx.fillText("2025-2026", w*0.44/0.9, h*0.61);
-                            ctx.resetTransform();
-                        })
-                    })
-                    break;
-                }
-            }
-        }
-
-        function nameToId(name) {
-            let ct = 0;
-            for (let i = sData.length-1; i >= 0; i--) {
-                let s = sData[i];
-                if (s.name.toLowerCase() === name.toLowerCase()) {
-                    let last3;
-                    for (let j of emailData) {
-                        if (j.n.toLowerCase() === name.toLowerCase()) {
-                            last3 = parseInt(j.e.substring(j.e.length-4, j.e.length-1));
-                        }
-                    }
-                    if (last3 === undefined) return;
-
-                    let hex = parseInt(s.image[0].split("_").at(-1).substring(0, 13), 16);
-                    return (hex - 1843008215449600 > 94100000 ? 5251000 : 5250000) + last3;
-                }
-            }
-        }
-        
-        document.querySelector("#submit").addEventListener("click", ()=>{
-            w = parseInt(document.querySelector("#width").value);
-            h = w*213/338;
-            canvas.width = w*scale;
-            canvas.height = h*scale;
-            canvas.style.width = w+"px";
-            canvas.style.height = h+"px";
-            document.fonts.ready.then(()=>{updateId(document.querySelector("#name").value)});
-        });
-
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>
